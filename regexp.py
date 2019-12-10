@@ -4,89 +4,40 @@ Created on Tue Dec 10 08:55:13 2019
 
 @author: wuhaoyu
 """
-import pysnooper
-​
 class Solution:
+    def isMatch(self, text, pattern):
+        ''' 如果模字符串为空，取匹配字符的逻辑值的非'''
+        if not pattern:
+            return not text
 
-    def isMatch(self, s: str, p: str) -> bool:
-        p = self._compile(p)
-        # s,p至少一个不为空
-        if p or s:
-            # p为空
-            if s and not p:
-                return 0
-            # s为空
-            elif not s and p:
-                if (set(p[::2]) == {"*"} or set(p[1::2]) == {"*"}) and p[-1] == "*":
-                    return 1
-                else:
-                    return 0
-            # 均不为空
-            else:
-                ls = list(s)
-                ls.reverse()
-                ts = ls.pop()
-                iep = iter(enumerate(p))
-                rpt = next(iep)
-                rp = rpt[1]
-                lp = ''
-                while len(ls) != 0:
-                    if rp == '.' or rp == ts:
-                        ts = ls.pop()
-                        lp = rp
-                        try:
-                            rpt = next(iep)
-                            rp = rpt[1]
-                        except:
-                            return [0, 1][len(ls)==0]
-                    elif rp == '*':
-                        if lp == ls[-1] or lp == '.':
-                            ts = ls.pop()
-                            lp = rp
-                            rpt = next(iep)
-                            rp = rpt[1]
-                        else:
-                            lp = rp
-                            rpt = next(iep)
-                            rp = rpt[1]
-                    else:
-                        try:
-                            nnpt = next(iep)
-                            nnp = nnpt[1]
-                            if nnp != '*':
-                                return 0
-                            else:
-                                rp = next(iep)
-                                lp = p[rp[0]-1]
-                        except:
-                            return 0
-                print('跳出去了')
-                trp = []
-                while True:
-                    try:
-                        rpt = next(iep)
-                        rp = rpt[1]
-                        trp.append(rp)
-                    except:
-                        pn = ''.join(trp)
-                        print('未匹配模子：',pn)
-                        break
-                if not pn:
-                    return 1
-                else:
-                    lp = p[rpt[0]-len(rp)]
-                    if lp != '*':
-                        return self.isMatch('', pn)
-                    else:
-                        return self.isMatch(s[-1], pn)
+        ''' 第一个字符的匹配结果'''
+        first_match = bool(text) and pattern[0] in {text[0], '.'}
 
-    def _compile(self, p):
-        p = p.replace("**","*")
-        if "**" in p:
-            return self._compile(self, p)
+        if len(pattern) >= 2 and pattern[1] == '*':
+            ''' 如果模字符串长度大于2，且第二个模字符为*'''
+            ''' 当模字符串当度大于2，且第二个模字符为星时：
+            检验首字符是否匹配成功。 1 0 
+            检验第三个字符开始的余模字符串是否匹配匹配字符串。 1 0
+            检验第二个字符串开始的匹配字符串是否匹配模字符串。 1 0
+            当第二个模字符为*号时，只有第二个字符串开始匹配字符串必须和模字符
+            串匹配上，否则不匹配。
+            如果能匹配上，那首字符必须匹配或者第三个字符开始的余模字符串匹配匹
+            配字符串。
+            '''
+            return (self.isMatch(text, pattern[2:]) or
+                    first_match and self.isMatch(text[1:], pattern))
         else:
-            return p
-
+            ''' 模字符串长度为1，或第二个模字符不为* '''
+            ''' 当模字符串长度为1时，返回匹配字符的首字符匹配结果并上余字符串
+            与""的匹配结果
+                当第二模字符不为*，返回匹配字符的首字符匹配结果并上余字符串
+            与余模字符串的匹配结果'''
+            ''' '''
+            return first_match and self.isMatch(text[1:], pattern[1:])
+text = ''
+text[23:]
+text = 'dsaf'
+pattern = 'dsaf'
 c = Solution().isMatch("aa",'a');c
 c = Solution().isMatch("aa",'a*');c
 c = Solution().isMatch("ab",'.*');c
@@ -97,86 +48,8 @@ c = Solution().isMatch("a","ab*a");c
 c = Solution().isMatch("aaa","ab*a*c*a");c
 c = Solution().isMatch("bbbba", ".*a*a");c
 c = Solution().isMatch("aaaaaaaaaaaaaaaaaaa", ".*a*a");c
+c = Solution().isMatch("", "");c
+c = Solution().isMatch("", ".*a*a");c
+c = Solution().isMatch("aaaaaaaaaaaaaaaaaaa", "");c
 
-#ls = list(s)
-#                ls.reverse()
-#                iep = iter(enumerate(p))
-#                lp = ''
-#                npt = next(iep)
-#                np = npt[1]
-#                while len(ls) != 0:
-#                    print("当前校验：",ls[-1],"\t上一个模子:",lp, "\t当前模子:",np)
-#                    # npt可以正常迭代
-#                    if np in [ls[-1], '.']:
-#                        ls.pop()
-#                        try:
-#                            npt = next(iep)
-#                            np = npt[1]
-#                            lp = p[np[0]-1]
-#                        except :
-##                            print('模子已耗尽，末位检验')
-##                            if np == '*':
-##                                if lp == ls[-1] or lp == '.':
-##                                    ls.pop()
-##                                else:
-##                                    return 0
-##                            else:
-##                                return 0
-#                    elif np == '*':
-#                        if lp == ls[-1] or lp == '.':
-#                            ls.pop()
-#                        else:
-#                            try:
-#                                npt = next(iep)
-#                                np = npt[1]
-#                                lp = p[np[0]-1]
-#                            except :
-##                                print('模子已耗尽，末位检验')
-##                                if np == '*':
-##                                    if lp == ls[-1] or lp == '.':
-##                                        ls.pop()
-##                                    else:
-##                                        return 0
-##                                else:
-##                                    return 0
-#                    else:
-#                        try:
-#                            nnpt = next(iep)
-#                            nnp = nnpt[1]
-#                            print("当前校验：",ls[-1],"\t上一个模子:",lp, "\t当前模子:",np,"\t下个一个模子：",nnp)
-#                            if nnp != '*':
-#                                return 0
-#                        except:
-#                            return 0
-#                print('跳出去了')
-#                rp = []
-#                while True:
-#                    try:
-#                        lp = np
-#                        npt = next(iep)
-#                        np = npt[1]
-#                        print("当前校验已完成,输出剩余模子\t当前模子:",np,"\t上一个模子:",p[npt[0]-1])
-#                        rp.append(np)
-#                    except:
-#                        rp = ''.join(rp)
-#                        print('未匹配模子：',rp)
-#                        break
-#
-#                if not rp:
-#                    return 1
-#                else:
-#                    lp = p[npt[0]-len(rp)]
-#                    if lp != '*':
-#                        return self.isMatch('', ''.join(rp))
-#                    else:
-#                        return self.isMatch(s[-1], ''.join(rp))
-#        else:
-#            return 1
-
-a = 1
-if a != 2:
-    print(3)
-elif a == 2:
-    print(2)
-elif a == 1:
-    print(1)
+0 or 1 and 1
