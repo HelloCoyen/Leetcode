@@ -34,10 +34,7 @@ class Solution:
             与余模字符串的匹配结果'''
             ''' '''
             return first_match and self.isMatch(text[1:], pattern[1:])
-text = ''
-text[23:]
-text = 'dsaf'
-pattern = 'dsaf'
+
 c = Solution().isMatch("aa",'a');c
 c = Solution().isMatch("aa",'a*');c
 c = Solution().isMatch("ab",'.*');c
@@ -52,4 +49,3 @@ c = Solution().isMatch("", "");c
 c = Solution().isMatch("", ".*a*a");c
 c = Solution().isMatch("aaaaaaaaaaaaaaaaaaa", "");c
 
-0 or 1 and 1
